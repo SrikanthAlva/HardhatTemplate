@@ -4,12 +4,9 @@ import "hardhat-deploy"
 import "hardhat-contract-sizer"
 import "dotenv/config"
 
-const FUJI_PRIVATE_KEY = process.env.FUJI_PRIVATE_KEY
-const AVALANCHE_PRIVATE_KEY = process.env.AVALANCHE_PRIVATE_KEY
-const FUJI_RPC_URL = process.env.FUJI_RPC_URL || ""
-const SNOWTRACE_API_KEY = process.env.SNOWTRACE_API_KEY || ""
-const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY || ""
-const AVALANCHE_RPC_URL = process.env.AVALANCHE_RPC_URL || ""
+const GOERLI_PRIVATE_KEY = process.env.GOERLI_PRIVATE_KEY
+const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL || ""
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || ""
 
 const config: HardhatUserConfig = {
     solidity: {
@@ -27,22 +24,12 @@ const config: HardhatUserConfig = {
         localhost: {
             chainId: 31337,
         },
-        fuji: {
-            url: FUJI_RPC_URL,
-            accounts: FUJI_PRIVATE_KEY !== undefined ? [FUJI_PRIVATE_KEY] : [],
-            saveDeployments: true,
-            chainId: 43113,
-            gasPrice: 25600000000,
-        },
-        avalanche: {
-            url: AVALANCHE_RPC_URL,
+        goerli: {
+            url: GOERLI_RPC_URL,
             accounts:
-                AVALANCHE_PRIVATE_KEY !== undefined
-                    ? [AVALANCHE_PRIVATE_KEY]
-                    : [],
+                GOERLI_PRIVATE_KEY !== undefined ? [GOERLI_PRIVATE_KEY] : [],
             saveDeployments: true,
-            chainId: 43114,
-            gasPrice: 25600000000,
+            chainId: 5,
         },
     },
     etherscan: {
@@ -50,8 +37,9 @@ const config: HardhatUserConfig = {
         apiKey: {
             // rinkeby: ETHERSCAN_API_KEY,
             // kovan: ETHERSCAN_API_KEY,
-            avalanche: SNOWTRACE_API_KEY,
-            avalancheFujiTestnet: SNOWTRACE_API_KEY,
+            goerli: ETHERSCAN_API_KEY,
+            // avalanche: SNOWTRACE_API_KEY,
+            // avalancheFujiTestnet: SNOWTRACE_API_KEY,
             // polygon: POLYGONSCAN_API_KEY,
         },
     },
