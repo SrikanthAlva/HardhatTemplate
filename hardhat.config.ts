@@ -3,6 +3,7 @@ import "@nomicfoundation/hardhat-toolbox"
 import "hardhat-deploy"
 import "hardhat-contract-sizer"
 import "dotenv/config"
+import "@openzeppelin/hardhat-upgrades"
 
 const GOERLI_PRIVATE_KEY = process.env.GOERLI_PRIVATE_KEY
 const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL || ""
