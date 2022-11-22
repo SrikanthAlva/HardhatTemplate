@@ -26,7 +26,7 @@ _Italics_ Syntax
 
 This is a link to [Google](https://google.com)
 
-This is to display an image ![alt text](https://google.com/images.logo.gif "Logo Title Text")
+This is to display an image !([https://google.com/images.logo.gif](https://www.citypng.com/public/uploads/preview/-11596996178apaxd1pez2.png) "Logo Title Text")
 
 ```
 Write your code here
