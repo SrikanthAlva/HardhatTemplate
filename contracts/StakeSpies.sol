@@ -11,6 +11,13 @@ interface IEspionage is IERC20 {
     function mint(address _to, uint256 _amount) external;
 }
 
+error StakeSpies__AlreadyInitialised();
+error StakeSpies__NotStarted();
+error StakeSpies__NotTokenOwner();
+error StakeSpies__NotTokenStaker();
+error StakeSpies__TokenReleaseWithheld();
+error StakeSpies__CantStake();
+
 contract StakeSpies is Ownable, Pausable, IERC721Receiver {
     IEspionage public espionageToken;
     IERC721A public avaxSpiesNFT;
@@ -41,8 +48,8 @@ contract StakeSpies is Ownable, Pausable, IERC721Receiver {
     event RewardPaid(address indexed user, uint256 reward);
     event ReleaseTokens(bool status);
 
-    function initStaking() public onlyOwner {
-        require(!initialised, "Already initialised");
+    function initialise() public onlyOwner {
+        if (initialised) revert StakeSpies__AlreadyInitialised();
         stakeStart = block.timestamp;
         initialised = true;
     }
@@ -73,12 +80,12 @@ contract StakeSpies is Ownable, Pausable, IERC721Receiver {
     function unstake(uint256 _tokenId) public {
         uint256[] memory wrapped = new uint256[](1);
         wrapped[0] = _tokenId;
-        claimReward(wrapped);
+        releaseReward(wrapped);
         _unstake(_tokenId);
     }
 
     function unstakeMany(uint256[] memory tokenIds) public {
-        claimReward(tokenIds);
+        releaseReward(tokenIds);
         for (uint256 i = 0; i < tokenIds.length; i++) {
             if (avaxSpiesNFT.ownerOf(tokenIds[i]) == msg.sender) {
                 _unstake(tokenIds[i]);
@@ -87,11 +94,10 @@ contract StakeSpies is Ownable, Pausable, IERC721Receiver {
     }
 
     function _stake(uint256 _tokenId) internal {
-        require(initialised, "Staking System: the staking has not started");
-        require(
-            avaxSpiesNFT.ownerOf(_tokenId) == msg.sender,
-            "user must be the owner of the token"
-        );
+        if (!initialised) revert StakeSpies__NotStarted();
+        if (avaxSpiesNFT.ownerOf(_tokenId) != msg.sender)
+            revert StakeSpies__NotTokenOwner();
+
         avaxSpiesNFT.transferFrom(msg.sender, address(this), _tokenId);
         SpiesStaked storage stakedSpy = stakedSpies[_tokenId];
 
@@ -103,11 +109,10 @@ contract StakeSpies is Ownable, Pausable, IERC721Receiver {
     }
 
     function _unstake(uint256 _tokenId) internal {
-        require(initialised, "Staking System: the staking has not started");
-        require(
-            avaxSpiesNFT.ownerOf(_tokenId) == msg.sender,
-            "user must be the owner of the token"
-        );
+        if (!initialised) revert StakeSpies__NotStarted();
+        if (stakedSpies[_tokenId].spyOwner != msg.sender)
+            revert StakeSpies__NotTokenStaker();
+
         if (stakedSpies[_tokenId].coolDownTimestamp > 0) {
             address spyOwner = stakedSpies[_tokenId].spyOwner;
             delete stakedSpies[_tokenId];
@@ -160,14 +165,12 @@ contract StakeSpies is Ownable, Pausable, IERC721Receiver {
         }
     }
 
-    function claimReward(uint256[] memory _tokenIds) public whenNotPaused {
-        require(releaseTokens == true, "Tokens cannnot be claimed yet");
+    function releaseReward(uint256[] memory _tokenIds) public whenNotPaused {
+        if (!releaseTokens) revert StakeSpies__TokenReleaseWithheld();
 
         for (uint256 i = 0; i < _tokenIds.length; i++) {
-            require(
-                avaxSpiesNFT.ownerOf(_tokenIds[i]) == msg.sender,
-                "You can only claim rewards for NFTs you own!"
-            );
+            if (stakedSpies[_tokenIds[i]].spyOwner != msg.sender)
+                revert StakeSpies__NotTokenStaker();
         }
 
         _updateReward(_tokenIds);
@@ -192,7 +195,7 @@ contract StakeSpies is Ownable, Pausable, IERC721Receiver {
         uint256,
         bytes calldata
     ) external pure override returns (bytes4) {
-        require(from == address(0x0), "Cannot send nfts to Vault directly");
+        if (from != address(0)) revert StakeSpies__CantStake();
         return IERC721Receiver.onERC721Received.selector;
     }
 }
