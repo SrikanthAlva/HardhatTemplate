@@ -12,8 +12,11 @@ export const networkConfig: networkConfigInfo = {
     31337: {
         name: "localhost",
     },
-    5: {
-        name: "goerli",
+    43113: {
+        name: "avalancheFujiTestnet",
+    },
+    43114: {
+        name: "avalanche",
     },
 }
 

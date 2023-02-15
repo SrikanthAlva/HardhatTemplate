@@ -1,4 +1,4 @@
-# Hardhat Project Template
+# Spy Financial HQ
 
 Steps
 
