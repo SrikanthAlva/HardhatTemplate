@@ -5,10 +5,9 @@ import "hardhat-contract-sizer"
 import "dotenv/config"
 import "@openzeppelin/hardhat-upgrades"
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY
-const TESTNET_RPC_URL = process.env.TESTNET_RPC_URL || ""
-const MAINNET_RPC_URL = process.env.MAINNET_RPC_URL || ""
-const EXPLORER_API_KEY = process.env.EXPLORER_API_KEY || ""
+const GOERLI_PRIVATE_KEY = process.env.GOERLI_PRIVATE_KEY
+const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL || ""
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || ""
 
 const config: HardhatUserConfig = {
     solidity: {
@@ -26,23 +25,23 @@ const config: HardhatUserConfig = {
         localhost: {
             chainId: 31337,
         },
-        avalancheFujiTestnet: {
-            url: TESTNET_RPC_URL,
-            accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
+        goerli: {
+            url: GOERLI_RPC_URL,
+            accounts:
+                GOERLI_PRIVATE_KEY !== undefined ? [GOERLI_PRIVATE_KEY] : [],
             saveDeployments: true,
-            chainId: 43113,
-        },
-        avalanche: {
-            url: MAINNET_RPC_URL,
-            accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
-            saveDeployments: true,
-            chainId: 43114,
+            chainId: 5,
         },
     },
     etherscan: {
+        // npx hardhat verify --network <NETWORK> <CONTRACT_ADDRESS> <CONSTRUCTOR_PARAMETERS>
         apiKey: {
-            avalanche: EXPLORER_API_KEY,
-            avalancheFujiTestnet: EXPLORER_API_KEY,
+            // rinkeby: ETHERSCAN_API_KEY,
+            // kovan: ETHERSCAN_API_KEY,
+            goerli: ETHERSCAN_API_KEY,
+            // avalanche: SNOWTRACE_API_KEY,
+            // avalancheFujiTestnet: SNOWTRACE_API_KEY,
+            // polygon: POLYGONSCAN_API_KEY,
         },
     },
 
@@ -63,7 +62,7 @@ const config: HardhatUserConfig = {
         },
     },
     mocha: {
-        timeout: 300000,
+        timeout: 300000, // 200 Seconds
     },
 }
 
