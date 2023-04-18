@@ -61,6 +61,11 @@ const config: HardhatUserConfig = {
             default: 1,
         },
     },
+    docgen: {
+        outputDir: "./docs",
+        pages: "items",
+        collapseNewlines: true,
+    },
     mocha: {
         timeout: 300000, // 200 Seconds
     },
